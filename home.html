@@ -1,1 +1,146 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body {
+    background: radial-gradient(ellipse at center, #1a237e, #000); /* Purple galaxy fade background */
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  #countdown-container {
+    text-align: center;
+    position: relative;
+  }
+  
+  #countdown {
+    font-size: 2em;
+    margin-bottom: 20px;
+    animation: floatText 4s ease-in-out infinite alternate; /* Text float animation */
+  }
 
+  @keyframes floatText {
+    0%, 100% {
+      transform: translate(5%, 10%);
+    }
+    50% {
+      transform: translate(-5%, -10%); /* Adjust values for desired movement */
+    }
+  }
+  
+  #progress-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+  }
+  
+  #progress-circle {
+    width: 100%;
+    height: 100%;
+    border: 5px solid orange;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  #progress-bar {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: 5px solid orange;
+    border-radius: 50%;
+    transform-origin: center bottom;
+    clip: rect(0, 500px, 500px, 0);
+  }
+</style>
+</head>
+<body>
+
+<div id="countdown-container">
+  <div id="countdown"></div>
+  <div id="progress-container">
+    <div id="progress-circle"></div>
+    <div id="progress-bar"></div>
+  </div>
+  <label hidden for="manual-time">Set Manual Time (HH:MM): </label>
+  <input hidden type="text" id="manual-time" placeholder="Enter time">
+  <button hidden onclick="setManualTime()">Set</button>
+</div>
+
+<audio controls loop id="test" hidden>
+  <source src="music.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<script>
+
+const audioElement = document.getElementById('test');
+  let hasStarted = false;
+
+  // Function to play audio if not started yet
+  function playAudio() {
+    if (!hasStarted) {
+      audioElement.play();
+      hasStarted = true;
+    }
+  }
+
+  // Attach event listener to start playback on mousemove
+  document.addEventListener('mousemove', playAudio);
+
+  var countDownDate = new Date("Sep 1, 2023 16:32:50").getTime();
+  var x;
+
+  function setManualTime() {
+    const manualTimeInput = document.getElementById('manual-time').value;
+    const [hours, minutes] = manualTimeInput.split(':');
+
+    if (hours && minutes) {
+      const currentDate = new Date();
+      const manualDate = new Date(currentDate);
+      manualDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+      countDownDate = manualDate.getTime();
+      until = "Manual Time";
+    }
+  }
+
+  function startCountdown() {
+    clearInterval(x);
+
+    x = setInterval(function() {
+      var now = new Date().getTime();
+      var distance = countDownDate - now;
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").innerHTML = days + "d " + hours + "h " +
+        minutes + "m " + seconds + "s ";
+
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("countdown").innerHTML = "EXPIRED";
+      }
+    }, 1000);
+  }
+
+  startCountdown();
+
+</script>
+
+</body>
+</html>
